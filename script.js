@@ -22,24 +22,26 @@ document.addEventListener("DOMContentLoaded", () => {
     "a, button, .btn-touch, .project-card, .skill",
   );
 
-  document.addEventListener("mousemove", (e) => {
-    cursor.style.left = e.clientX + "px";
-    cursor.style.top = e.clientY + "px";
+  if (window.innerWidth > 900) {
+    document.addEventListener("mousemove", (e) => {
+      cursor.style.left = e.clientX + "px";
+      cursor.style.top = e.clientY + "px";
 
-    setTimeout(() => {
-      follower.style.left = e.clientX + "px";
-      follower.style.top = e.clientY + "px";
-    }, 50);
-  });
+      setTimeout(() => {
+        follower.style.left = e.clientX + "px";
+        follower.style.top = e.clientY + "px";
+      }, 50);
+    });
 
-  interactives.forEach((el) => {
-    el.addEventListener("mouseenter", () =>
-      document.body.classList.add("hovering"),
-    );
-    el.addEventListener("mouseleave", () =>
-      document.body.classList.remove("hovering"),
-    );
-  });
+    interactives.forEach((el) => {
+      el.addEventListener("mouseenter", () =>
+        document.body.classList.add("hovering"),
+      );
+      el.addEventListener("mouseleave", () =>
+        document.body.classList.remove("hovering"),
+      );
+    });
+  }
 
   const themeToggle = document.getElementById("theme-toggle");
   const body = document.body;
@@ -71,5 +73,21 @@ document.addEventListener("DOMContentLoaded", () => {
     } else {
       enableLightMode();
     }
+  });
+
+  const menuToggle = document.getElementById("mobile-menu");
+  const navLinks = document.getElementById("nav-links");
+  const navItems = navLinks.querySelectorAll("a");
+
+  menuToggle.addEventListener("click", () => {
+    menuToggle.classList.toggle("is-active");
+    navLinks.classList.toggle("active");
+  });
+
+  navItems.forEach((item) => {
+    item.addEventListener("click", () => {
+      menuToggle.classList.remove("is-active");
+      navLinks.classList.remove("active");
+    });
   });
 });
