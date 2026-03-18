@@ -676,6 +676,7 @@ section {
   }
   .marquee {
     font-size: 1.5rem;
+    animation: none;
   }
   .navbar {
     padding: 1rem 1.5rem;
@@ -701,10 +702,11 @@ section {
   }
   .nav-links li {
     margin: 1.5rem 0;
+    display: block !important;
   }
   .nav-links li:first-child,
   .nav-links li:nth-child(2) {
-    display: block;
+    display: flex !important;
   }
   .nav-links a {
     font-size: 1.2rem;
