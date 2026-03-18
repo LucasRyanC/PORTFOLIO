@@ -1,164 +1,131 @@
 (() => {
-  const cursor = document.querySelector(".cursor");
-  const follower = document.querySelector(".cursor-follower");
-  const navToggle = document.querySelector(".menu-toggle");
-  const navLinks = document.querySelector(".nav-links");
-  const themeBtn = document.querySelector(".theme-btn");
+  const cursor = document.getElementById("cursor");
+  const follower = document.getElementById("cursor-follower");
+  const navToggle = document.getElementById("mobile-menu");
+  const navLinks = document.getElementById("nav-links");
+  const navItems = document.querySelectorAll(".nav-item");
+  const themeBtn = document.getElementById("theme-toggle");
+  const kanjiTheme = document.querySelector(".kanji-theme");
+  const themeText = document.querySelector(".theme-text");
 
   let mouseX = 0,
     mouseY = 0,
     followerX = 0,
-    followerY = 0,
-    hoverDelay = null,
-    isHovering = false,
-    lastScrollY = window.scrollY,
-    scrollLockTimeout = null,
-    lastKeyBoardAction = 0,
-    currentTheme =
-      localStorage.getItem("theme") ||
-      (window.matchMedia("(prefers-color-scheme: light)").matches
-        ? "light"
-        : "dark");
-  let lastHoverElement = null;
-  let hoverTimeout = null;
+    followerY = 0;
+  let isHovering = false,
+    hoverDelay = null;
+  let scrollTimeout = null;
+
+  const isTouchDevice =
+    "ontouchstart" in window || navigator.maxTouchPoints > 0;
+
+  let currentTheme =
+    localStorage.getItem("theme") ||
+    (window.matchMedia("(prefers-color-scheme: light)").matches
+      ? "light"
+      : "dark");
 
   const updateTheme = () => {
     document.documentElement.setAttribute("data-theme", currentTheme);
     if (currentTheme === "light") {
       document.body.classList.add("light-mode");
+      kanjiTheme.textContent = "夜";
+      themeText.textContent = "DARK";
     } else {
       document.body.classList.remove("light-mode");
+      kanjiTheme.textContent = "昼";
+      themeText.textContent = "LIGHT";
     }
   };
+
   updateTheme();
 
-  const handleMouseMove = (e) => {
-    if (!cursor || !follower) return;
-    const rect = cursor.getBoundingClientRect();
-    mouseX = e.clientX - rect.left;
-    mouseY = e.clientY - rect.top;
-  };
-  const handleMouseEnter = () => {
-    if (!follower) return;
-    if (isHovering) {
-      clearTimeout(hoverDelay);
-    } else {
-      isHovering = true;
-      document.body.classList.add("hovering");
-      hoverDelay = setTimeout(() => {
-        isHovering = false;
-        document.body.classList.remove("hovering");
-      }, 150);
-    }
-  };
-  const handleMouseLeave = () => {
-    if (!follower) return;
-    clearTimeout(hoverDelay);
-    isHovering = false;
-    document.body.classList.remove("hovering");
-  };
-  const handleTouchStart = () => {
-    document.body.classList.remove("hovering");
-    isHovering = false;
-    clearTimeout(hoverDelay);
-  };
-  const handleScroll = () => {
-    if (scrollLockTimeout) {
-      clearTimeout(scrollLockTimeout);
-      scrollLockTimeout = setTimeout(() => {
-        lastScrollY = window.scrollY;
-      }, 30);
-      return;
-    }
-    const direction = window.scrollY > lastScrollY ? "down" : "up";
-    const icons = document.querySelectorAll(".kanji-theme");
-    if (direction === "down") {
-      icons.forEach((icon) => icon.classList.add("fade-in"));
-    } else {
-      icons.forEach((icon) => icon.classList.remove("fade-in"));
-    }
-    lastScrollY = window.scrollY;
-  };
-
-  window.addEventListener("mousemove", handleMouseMove);
-  window.addEventListener("mouseenter", handleMouseEnter);
-  window.addEventListener("mouseleave", handleMouseLeave);
-  window.addEventListener("touchstart", handleTouchStart, { passive: true });
-  window.addEventListener("scroll", handleScroll, { passive: true });
-
-  const animate = () => {
-    if (!cursor || !follower) return;
-
-    if (!isHovering) {
-      followerX = mouseX;
-      followerY = mouseY;
-    }
-
-    const dx = followerX - mouseX;
-    const dy = mouseY - followerY;
-    followerX += dx * 0.15;
-    followerY += dy * 0.15;
-
-    cursor.style.transform = `translate3d(${mouseX}px, ${mouseY}px, 0) translate3d(-50%, -50%, 0)`;
-    follower.style.transform = `translate3d(${followerX}px, ${followerY}px, 0) translate3d(-50%, -50%, 0)`;
-
-    const now = performance.now();
-    if (now - lastKeyBoardAction < 50) return;
-    lastKeyBoardAction = now;
-
-    requestAnimationFrame(animate);
-  };
-  requestAnimationFrame(animate);
-
-  const handleNavToggle = () => {
-    if (!navToggle || !navLinks) return;
-    navToggle.classList.toggle("is-active");
-    navLinks.classList.toggle("active");
-  };
-  navToggle.addEventListener("click", handleNavToggle);
-
-  const handleThemeToggle = () => {
+  themeBtn.addEventListener("click", () => {
     currentTheme = currentTheme === "light" ? "dark" : "light";
     updateTheme();
     localStorage.setItem("theme", currentTheme);
-  };
-  themeBtn.addEventListener("click", handleThemeToggle);
-  window.addEventListener("keydown", (e) => {
-    if (e.key === "k" && (e.ctrlKey || e.metaKey)) {
-      e.preventDefault();
-      handleThemeToggle();
-    }
   });
 
-  const observeElements = () => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            entry.target.classList.add("active");
-          }
+  navToggle.addEventListener("click", () => {
+    navToggle.classList.toggle("is-active");
+    navLinks.classList.toggle("active");
+  });
+
+  navItems.forEach((item) => {
+    item.addEventListener("click", () => {
+      navToggle.classList.remove("is-active");
+      navLinks.classList.remove("active");
+    });
+  });
+
+  const kanjiIcons = document.querySelectorAll(".kanji-theme");
+
+  window.addEventListener(
+    "scroll",
+    () => {
+      if (!scrollTimeout) {
+        scrollTimeout = requestAnimationFrame(() => {
+          scrollTimeout = null;
         });
-      },
-      { threshold: 0.15 },
+      }
+    },
+    { passive: true },
+  );
+
+  const observer = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add("active");
+          observer.unobserve(entry.target);
+        }
+      });
+    },
+    { threshold: 0.15 },
+  );
+
+  document.querySelectorAll(".reveal").forEach((el) => observer.observe(el));
+
+  if (!isTouchDevice && cursor && follower) {
+    window.addEventListener("mousemove", (e) => {
+      mouseX = e.clientX;
+      mouseY = e.clientY;
+      cursor.style.left = `${mouseX}px`;
+      cursor.style.top = `${mouseY}px`;
+    });
+
+    const interactables = document.querySelectorAll(
+      "a, button, .project-card, .skill",
     );
 
-    const elements = document.querySelectorAll(".reveal");
-    elements.forEach((el) => {
-      if (!el.classList.contains("active")) {
-        observer.observe(el);
-      } else {
-        observer.unobserve(el);
-      }
+    interactables.forEach((el) => {
+      el.addEventListener("mouseenter", () => {
+        isHovering = true;
+        document.body.classList.add("hovering");
+      });
+      el.addEventListener("mouseleave", () => {
+        isHovering = false;
+        document.body.classList.remove("hovering");
+      });
     });
-  };
-  observeElements();
 
-  window.addEventListener("load", () => {
-    const reveals = document.querySelectorAll(".reveal");
-    reveals.forEach((reveal) => {
-      if (reveal.getBoundingClientRect().top < window.innerHeight * 0.9) {
-        reveal.classList.add("active");
+    const animateCursor = () => {
+      if (!isHovering) {
+        const dx = mouseX - followerX;
+        const dy = mouseY - followerY;
+        followerX += dx * 0.15;
+        followerY += dy * 0.15;
+      } else {
+        followerX = mouseX;
+        followerY = mouseY;
       }
-    });
-  });
+
+      follower.style.left = `${followerX}px`;
+      follower.style.top = `${followerY}px`;
+
+      requestAnimationFrame(animateCursor);
+    };
+
+    animateCursor();
+  }
 })();

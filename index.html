@@ -11,8 +11,8 @@
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
-    <div class="cursor"></div>
-    <div class="cursor-follower"></div>
+    <div class="cursor" id="cursor"></div>
+    <div class="cursor-follower" id="cursor-follower"></div>
 
     <div class="bg-grid"></div>
 
@@ -29,16 +29,16 @@
       </div>
 
       <ul class="nav-links" id="nav-links">
-        <li><a href="#about">SOBRE // 私について</a></li>
-        <li><a href="#projects">PROJETOS // プロジェクト</a></li>
-
+        <li><a href="#about" class="nav-item">SOBRE // 私について</a></li>
+        <li>
+          <a href="#projects" class="nav-item">PROJETOS // プロジェクト</a>
+        </li>
         <li>
           <button id="theme-toggle" class="btn-touch theme-btn">
             <span class="kanji-theme">昼</span>
             <span class="theme-text">LIGHT</span>
           </button>
         </li>
-
         <li>
           <a
             href="https://github.com/lucasryanc"
@@ -78,9 +78,6 @@
 
     <div class="marquee-container">
       <div class="marquee">
-        <span
-          >CRIATIVIDADE • 創造性 • HTML5 • CSS3 • JAVASCRIPT • DESIGN GRÁFICO •
-        </span>
         <span
           >CRIATIVIDADE • 創造性 • HTML5 • CSS3 • JAVASCRIPT • DESIGN GRÁFICO •
         </span>
@@ -182,8 +179,7 @@
           <p>
             Projeto de landing page para restaurante fictício. Foco em design
             moderno, responsividade e interatividade usando apenas HTML, CSS e
-            JavaScript para criar uma experiência de usuário envolvente e
-            visualmente atraente.
+            JavaScript para criar uma experiência de usuário envolvente.
           </p>
           <div class="tags">
             <span class="tag">DOM</span><span class="tag">JS</span
